@@ -35,6 +35,12 @@ function dashImage(token) {
   return Utilities.base64Encode(UrlFetchApp.fetch(BASE + 'dashboard.png?t=' + Date.now()).getContent());
 }
 
+/** Trang view.html gọi hàm này để lấy mức dùng Claude (chuỗi JSON, Mac gửi lên 5 phút/lần). */
+function dashClaude(token) {
+  if (token !== TOKEN) throw new Error('forbidden');
+  return PropertiesService.getScriptProperties().getProperty('claude_usage') || '';
+}
+
 /** Mac mini gửi mức dùng Claude lên đây (POST ?token=...), lưu lại để doGet trả kèm. */
 function doPost(e) {
   if (!e || !e.parameter || e.parameter.token !== TOKEN) {

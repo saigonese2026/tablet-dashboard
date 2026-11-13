@@ -692,7 +692,8 @@ def render(events: list[Event], tasks: list[Task], now: datetime, weather: Weath
         y += 32
 
         # ============ MỨC DÙNG CLAUDE (nếu Mac mini có gửi số liệu)
-        if CLAUDE_USAGE:
+        # DASH_CLAUDE_IMG=0: không vẽ Claude vào ảnh (trang tablet tự hiện khung Claude trực tiếp)
+        if CLAUDE_USAGE and os.environ.get("DASH_CLAUDE_IMG", "1") != "0":
             y = draw_claude(d, y, CLAUDE_USAGE, now)
             d.line([(MARGIN, y), (W - MARGIN, y)], fill=PALE, width=2)
             y += 28

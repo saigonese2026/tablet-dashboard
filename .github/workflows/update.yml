@@ -54,11 +54,13 @@ jobs:
           DASH_LON: "106.7009"
           # Tiêu đề bố cục claude (tuỳ chọn)
           DASH_TITLE: "Claude"
-          # Cỡ chữ: 0.9 hợp màn 7 inch, nhỏ hơn thì hiện được nhiều việc hơn
-          DASH_SCALE: "0.9"
-          # Kích thước ảnh (điểm ảnh, dựng đứng). 800x1280 = Galaxy Tab A 7.0 (SM-T285).
+          # Cỡ chữ: 0.75 hợp màn 7 inch có khung Claude, nhỏ hơn thì hiện được nhiều việc hơn
+          DASH_SCALE: "0.75"
+          # Kích thước ảnh (điểm ảnh, dựng đứng). 800x890 = Galaxy Tab A 7.0 (SM-T285) trừ thanh Chrome và khung Claude.
           DASH_W: "800"
-          DASH_H: "1280"
+          DASH_H: "890"
+          # 0 = không vẽ Claude vào ảnh (trang tablet tự hiện khung Claude, cập nhật 5 phút/lần)
+          DASH_CLAUDE_IMG: "0"
           DASH_FABLE_KEY: ${{ vars.DASH_FABLE_KEY }}
           SECRET_PATH: ${{ secrets.SECRET_PATH }}
         run: |

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Lấy mức dùng Claude (phiên 5 giờ + giới hạn tuần) rồi gửi lên Apps Script để dashboard Kindle hiển thị.
-# Chạy trên Mac mini (đã cài và đăng nhập Claude Code), launchd gọi 10 phút/lần.
+# Lấy mức dùng Claude (phiên 5 giờ + giới hạn tuần) rồi gửi lên Apps Script để dashboard hiển thị.
+# Chạy trên Mac mini (đã cài và đăng nhập Claude Code), launchd gọi 5 phút/lần.
 # Lưu ý: endpoint này là endpoint nội bộ Claude Code dùng, chưa được Anthropic công bố — có thể đổi bất cứ lúc nào.
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$HOME/.npm-global/bin:/usr/bin:/bin"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cài job lấy mức dùng Claude trên Mac mini: chạy 10 phút/lần bằng launchd.
+# Cài job lấy mức dùng Claude trên Mac mini: chạy 5 phút/lần bằng launchd.
 # Cách dùng:  bash install.sh
 set -e
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -21,7 +21,7 @@ cat > "$PLIST" <<EOF
 <dict>
   <key>Label</key><string>com.kindledashboard.claude-usage</string>
   <key>ProgramArguments</key><array><string>/bin/bash</string><string>$DIR/claude_usage.sh</string></array>
-  <key>StartInterval</key><integer>600</integer>
+  <key>StartInterval</key><integer>300</integer>
   <key>RunAtLoad</key><true/>
 </dict>
 </plist>
