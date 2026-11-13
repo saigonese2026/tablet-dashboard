@@ -107,6 +107,15 @@ Android dưới 7.1 **không nhận chứng chỉ của GitHub Pages** (Let's En
 
 Link này chứa TOKEN, giữ kín như DATA_URL.
 
+### Khung Claude trực tiếp trên tablet (máy Android cũ, Phần 3b)
+
+Trang `...&view=1` có khung **CLAUDE** riêng ở dưới màn hình: phiên 5 giờ + tuần này, số %, thanh tiến độ, ▲ thời gian đã trôi, giờ đặt lại và đếm ngược. Khung này lấy số liệu thẳng từ Apps Script mỗi 5 phút (không chờ GitHub vẽ lại ảnh).
+
+- Mac gửi số liệu 5 phút/lần (`mac/install.sh` đặt `StartInterval` = 300). Cài: chép thư mục `mac/` vào `~/tablet-dashboard-mac`, lưu DATA_URL vào `~/.kindle-dashboard-url`, chạy `bash ~/tablet-dashboard-mac/install.sh`.
+- Apps Script cần hàm `dashClaude` (có sẵn trong `apps_script.gs`), nhớ Deploy bản mới.
+- Workflow đặt `DASH_CLAUDE_IMG: "0"` để ảnh không vẽ Claude trùng, và `DASH_H: "890"` để chừa chỗ cho khung.
+- Mac ngủ / tắt quá 20 phút thì khung hiện **SỐ LIỆU CŨ**.
+
 ---
 
 ## Phần 4: Tuỳ chỉnh
