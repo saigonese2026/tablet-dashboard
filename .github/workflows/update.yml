@@ -64,7 +64,7 @@ jobs:
         run: |
           python render.py --out "_site/${SECRET_PATH:-img}/dashboard.png"
           # trang hiển thị cho tablet (nằm cùng thư mục bí mật với ảnh)
-          cp tablet/index.html tablet/manifest.json tablet/icon-*.png "_site/${SECRET_PATH:-img}/"
+          cp tablet/index.html tablet/view.html tablet/manifest.json tablet/icon-*.png "_site/${SECRET_PATH:-img}/"
           touch _site/index.html
           # ảnh mẫu (dữ liệu giả) để minh hoạ, ai cũng xem được
           python render.py --sample sample.json --now "2026-11-06T10:30" --out _site/preview.png

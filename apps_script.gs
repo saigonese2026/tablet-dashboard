@@ -11,12 +11,28 @@
  */
 const TOKEN = 'DOI-THANH-CHUOI-BI-MAT';
 const TZ = 'Asia/Ho_Chi_Minh';
+// (Tuỳ chọn, cho tablet Android 5–7) Link thư mục ảnh trên GitHub Pages, có dấu / ở cuối:
+// https://<tên-github>.github.io/<tên-repo>/<SECRET_PATH>/   — mở .../exec?token=...&view=1 trên tablet
+const BASE = '';
 
 function doGet(e) {
   if (!e || !e.parameter || e.parameter.token !== TOKEN) {
     return ContentService.createTextOutput('{"error":"forbidden"}').setMimeType(ContentService.MimeType.JSON);
   }
+  if (e.parameter.view) return view_();
   return ContentService.createTextOutput(JSON.stringify(collect_())).setMimeType(ContentService.MimeType.JSON);
+}
+
+/** Trang hiển thị cho máy Android cũ: lấy view.html từ GitHub Pages, phục vụ qua tên miền Google. */
+function view_() {
+  return HtmlService.createHtmlOutput(UrlFetchApp.fetch(BASE + 'view.html').getContentText())
+    .setTitle('Lịch & Todo').addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/** Trang view.html gọi hàm này để lấy ảnh dashboard (base64). */
+function dashImage(token) {
+  if (token !== TOKEN) throw new Error('forbidden');
+  return Utilities.base64Encode(UrlFetchApp.fetch(BASE + 'dashboard.png?t=' + Date.now()).getContent());
 }
 
 /** Mac mini gửi mức dùng Claude lên đây (POST ?token=...), lưu lại để doGet trả kèm. */

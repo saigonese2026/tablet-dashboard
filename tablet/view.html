@@ -1,0 +1,69 @@
+<!-- Trang hiển thị phục vụ qua Apps Script (…/exec?token=…&view=1).
+     Dùng cho máy Android cũ (Android 5–7) không nhận chứng chỉ của GitHub Pages:
+     ảnh được Apps Script tải từ GitHub rồi gửi sang dưới dạng base64.
+     Viết bằng JavaScript đời cũ (ES5) để chạy cả trên Chrome cũ. -->
+<style>
+  html, body { margin: 0; height: 100%; background: #fff; overflow: hidden; }
+  #img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+  body.night { background: #000; }
+  body.night #img { -webkit-filter: invert(1) brightness(.55); filter: invert(1) brightness(.55); }
+  #msg {
+    position: fixed; right: 12px; bottom: 10px; font: 14px/1.3 sans-serif;
+    color: #fff; background: rgba(180, 30, 30, .85); padding: 6px 10px; border-radius: 8px; display: none;
+  }
+</style>
+<img id="img" alt="Dashboard lịch và việc cần làm">
+<div id="msg"></div>
+<script>
+var params = {};
+var img = document.getElementById("img"), msg = document.getElementById("msg");
+var lastOk = new Date().getTime(), loadedAt = lastOk;
+
+function num(v, d) { var n = Number(v); return isNaN(n) || v === undefined || v === "" ? d : n; }
+
+function isNight() {
+  var dem = params.dem === undefined ? "22-6" : String(params.dem);
+  if (dem === "0") return false;
+  var p = dem.split("-"), a = Number(p[0]), b = Number(p[1]);
+  if (isNaN(a) || isNaN(b)) return false;
+  var h = new Date().getHours();
+  return a > b ? (h >= a || h < b) : (h >= a && h < b);
+}
+function applyNight() { document.body.className = isNight() ? "night" : ""; }
+
+function showErr(text) {
+  var mins = Math.round((new Date().getTime() - lastOk) / 60000);
+  msg.textContent = text + (mins ? " (" + mins + " phút)" : "");
+  msg.style.display = "block";
+}
+
+function refresh() {
+  applyNight();
+  google.script.run
+    .withSuccessHandler(function (b64) {
+      img.src = "data:image/png;base64," + b64;
+      lastOk = new Date().getTime();
+      msg.style.display = "none";
+    })
+    .withFailureHandler(function () { showErr("Không tải được ảnh mới · kiểm tra Wi-Fi"); })
+    .dashImage(params.token || "");
+}
+
+// Chạm 2 lần: thử bật toàn màn hình
+document.addEventListener("dblclick", function () {
+  var de = document.documentElement, req = de.requestFullscreen || de.webkitRequestFullscreen;
+  if (req) { try { var p = req.call(de); if (p && p["catch"]) p["catch"](function () {}); } catch (e) {} }
+});
+
+google.script.url.getLocation(function (loc) {
+  params = loc.parameter || {};
+  var everyMin = Math.max(1, num(params.phut, 5));
+  refresh();
+  setInterval(refresh, everyMin * 60 * 1000);
+  setInterval(applyNight, 60 * 1000);
+  // Tải lại cả trang mỗi ngày lúc ~3h sáng cho trình duyệt cũ khỏi đơ
+  setInterval(function () {
+    if (new Date().getHours() === 3 && new Date().getTime() - loadedAt > 3600e3) location.reload();
+  }, 30 * 60 * 1000);
+});
+</script>
