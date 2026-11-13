@@ -676,6 +676,15 @@ def render(events: list[Event], tasks: list[Task], now: datetime, weather: Weath
             l1 = f"{weather.desc} · {round(weather.tmin)}–{round(weather.tmax)}°"
             l2 = f"Mưa {weather.rain}%" + (f" · AQI {weather.aqi} {aqi_label(weather.aqi)}" if weather.aqi is not None else "")
             fw = font("Medium", 28)
+            # màn hẹp: rút gọn dòng 2 để không đè lên dòng âm lịch bên trái
+            room = right - (MARGIN + d.textlength(lunar_txt, font=f_sub) + 24)
+            for alt in (l2,
+                        f"Mưa {weather.rain}%" + (f" · AQI {weather.aqi}" if weather.aqi is not None else ""),
+                        f"AQI {weather.aqi} {aqi_label(weather.aqi)}" if weather.aqi is not None else f"Mưa {weather.rain}%",
+                        f"AQI {weather.aqi}" if weather.aqi is not None else ""):
+                l2 = alt
+                if d.textlength(l2, font=f_sub) <= room:
+                    break
             d.text((right - d.textlength(l1, font=fw), y + 124), l1, font=fw, fill=DARK)
             d.text((right - d.textlength(l2, font=f_sub), y + 164), l2, font=f_sub, fill=MID)
         y += 222
