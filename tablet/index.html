@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#ffffff">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>Lịch &amp; Todo</title>
+<!-- Viết bằng JavaScript đời cũ (ES5) để chạy được cả trên Chrome 43 / Android 5 -->
+<style>
+  html, body { margin: 0; height: 100%; background: #fff; overflow: hidden; }
+  #img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; display: block;
+         -webkit-transition: -webkit-filter .6s; transition: filter .6s; }
+  /* Ban đêm: đảo màu (nền đen chữ xám) để đỡ chói */
+  body.night { background: #000; }
+  body.night #img { -webkit-filter: invert(1) brightness(.55); filter: invert(1) brightness(.55); }
+  #msg {
+    position: fixed; right: 12px; bottom: 10px; font: 14px/1.3 sans-serif;
+    color: #fff; background: rgba(180, 30, 30, .85); padding: 6px 10px; border-radius: 8px; display: none;
+  }
+  #hint {
+    position: fixed; left: 0; right: 0; top: 16px; margin: 0 auto; width: 300px; text-align: center;
+    font: 15px/1.4 sans-serif; color: #fff; background: rgba(0,0,0,.75); padding: 8px 14px; border-radius: 10px;
+    -webkit-transition: opacity 1s; transition: opacity 1s;
+  }
+</style>
+</head>
+<body>
+<img id="img" alt="Dashboard lịch và việc cần làm">
+<div id="msg"></div>
+<div id="hint">Chạm 2 lần để toàn màn hình<br>tự làm mới mỗi 5 phút</div>
+<script>
+// Tuỳ chọn qua URL:  ?phut=5  (làm mới mấy phút/lần)  ·  ?dem=22-6  (giờ bật chế độ đêm, "0" để tắt)
+function param(name) {
+  var m = new RegExp("[?&]" + name + "=([^&#]*)").exec(location.search);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+var EVERY_MIN = Math.max(1, Number(param("phut")) || 5);
+var demRaw = param("dem");
+if (demRaw === null) demRaw = "22-6";
+var dem = demRaw.split("-");
+var NIGHT_FROM = Number(dem[0]), NIGHT_TO = Number(dem[1]);
+var img = document.getElementById("img"), msg = document.getElementById("msg");
+var lastOk = new Date().getTime();
+var loadedAt = lastOk;
+
+function isNight() {
+  if (demRaw === "0" || isNaN(NIGHT_FROM) || isNaN(NIGHT_TO)) return false;
+  var h = new Date().getHours();
+  return NIGHT_FROM > NIGHT_TO ? (h >= NIGHT_FROM || h < NIGHT_TO) : (h >= NIGHT_FROM && h < NIGHT_TO);
+}
+function applyNight() {
+  document.body.className = isNight() ? "night" : "";
+}
+
+function refresh() {
+  applyNight();
+  var next = new Image();
+  next.onload = function () { img.src = next.src; lastOk = new Date().getTime(); msg.style.display = "none"; };
+  next.onerror = function () {
+    var mins = Math.round((new Date().getTime() - lastOk) / 60000);
+    msg.textContent = "Không tải được ảnh mới" + (mins ? " (" + mins + " phút)" : "") + " · kiểm tra Wi-Fi";
+    msg.style.display = "block";
+  };
+  next.src = "dashboard.png?t=" + new Date().getTime();   // tránh cache
+}
+
+// Giữ màn hình luôn sáng nếu trình duyệt hỗ trợ (Chrome 84+). Chrome cũ: bật "Luôn bật màn hình" khi sạc.
+var lock = null;
+function keepAwake() {
+  try {
+    if (navigator.wakeLock && !lock) {
+      navigator.wakeLock.request("screen").then(function (l) {
+        lock = l; l.addEventListener("release", function () { lock = null; });
+      })["catch"](function () {});
+    }
+  } catch (e) {}
+}
+document.addEventListener("visibilitychange", function () { if (!document.hidden) { keepAwake(); refresh(); } });
+document.addEventListener("click", keepAwake);
+
+// Chạm 2 lần: bật/tắt toàn màn hình
+document.addEventListener("dblclick", function () {
+  var de = document.documentElement;
+  var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fsEl) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+  else {
+    var req = de.requestFullscreen || de.webkitRequestFullscreen;
+    if (req) { try { var p = req.call(de); if (p && p["catch"]) p["catch"](function () {}); } catch (e) {} }
+  }
+});
+
+setTimeout(function () { document.getElementById("hint").style.opacity = 0; }, 6000);
+refresh(); keepAwake();
+setInterval(refresh, EVERY_MIN * 60 * 1000);
+setInterval(applyNight, 60 * 1000);
+// Tải lại cả trang mỗi ngày lúc ~3h sáng để trình duyệt cũ không bị đơ sau nhiều ngày
+setInterval(function () {
+  if (new Date().getHours() === 3 && new Date().getTime() - loadedAt > 3600e3) location.reload();
+}, 30 * 60 * 1000);
+</script>
+</body>
+</html>
