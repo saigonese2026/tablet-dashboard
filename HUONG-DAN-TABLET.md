@@ -93,6 +93,22 @@ Xong. Trang tự tải ảnh mới 5 phút/lần (GitHub vẽ ảnh mới khoả
 
 ---
 
+## Phần 3b: Máy Android cũ (Android 5–7, ví dụ Galaxy Tab A 7.0 SM-T285)
+
+Android dưới 7.1 **không nhận chứng chỉ của GitHub Pages** (Let's Encrypt), Chrome báo *"Kết nối của bạn không phải là kết nối riêng tư"*. Firefox cũng không cài được trên Android 5. Cách xử lý: để Apps Script tải ảnh từ GitHub rồi gửi sang tablet qua tên miền Google (máy cũ vẫn nhận).
+
+1. Trong Apps Script, sửa dòng `const BASE = '';` thành link thư mục ảnh của bạn, có `/` ở cuối:
+   `const BASE = 'https://<tên-github>.github.io/<tên-repo>/<SECRET_PATH>/';`
+2. Save → chạy thử một hàm bất kỳ → cấp thêm quyền *"kết nối với dịch vụ bên ngoài"*.
+3. **Deploy → Manage deployments → ✏️ → Version: New version → Deploy** (link giữ nguyên).
+4. Trên tablet mở bằng Chrome: `<DATA_URL>&view=1` (tức `.../exec?token=<TOKEN>&view=1`) → menu ⋮ → **Thêm vào Màn hình chính**.
+5. Bấm ✕ để tắt dòng *"Ứng dụng này do một người dùng Google Apps Script tạo"* (Google luôn hiện dòng này, không bỏ hẳn được).
+6. Chrome đời cũ không tự giữ màn hình sáng được: **Cài đặt → Cài đặt cho người phát triển → bật "Bật màn hình"** (màn hình không tắt khi đang sạc). Mục này chỉ có sau khi bật chế độ nhà phát triển (chạm 7 lần vào *Số hiệu bản tạo*).
+
+Link này chứa TOKEN, giữ kín như DATA_URL.
+
+---
+
 ## Phần 4: Tuỳ chỉnh
 
 **Trên tablet** (thêm vào cuối link, rồi cài lại biểu tượng ở Phần 3 bước 2):
